@@ -10,7 +10,10 @@ pipeline {
   }
   post{
       success{
-        emailext body: 'Email sent out from jenkin', subject: 'TestEmail', to: 'priyasingh8911@gmail.com'
+        emailext attachLog: true, body: 'Email Sent out from jenkins', subject: 'Test Email - Success', to: 'priyasingh8911@gmail.com'
+      }
+      failure{
+        emailext attachLog: true, body: 'Email Sent out from jenkins', subject: 'Test Email - Failure', to: 'priyasingh8911@gmail.com'
       }
   }
 }
