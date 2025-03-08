@@ -7,9 +7,9 @@ pipeline {
          echo "Building the project"
        }
      }
-     post{
+  }
+  post{
       sucess{
       }
-     }
   }
 }
