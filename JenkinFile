@@ -1,19 +1,93 @@
 pipeline {
-   agent any
+    agent any  // Executes on any available node
 
-   stages{
-      stage ('Build'){
-       steps{
-         echo "Building the project"
-       }
-     }
-  }
-  post{
-      success{
-        emailext attachLog: true, body: 'Email Sent out from jenkins', subject: 'Test Email - Success', to: 'priyasingh8911@gmail.com'
-      }
-      failure{
-        emailext attachLog: true, body: 'Email Sent out from jenkins', subject: 'Test Email - Failure', to: 'priyasingh8911@gmail.com'
-      }
-  }
+    environment {
+        // Define environment variables
+        APP_NAME = 'my-app'
+        BUILD_DIR = 'build'
+    }
+
+    options {
+        timeout(time: 30, unit: 'MINUTES')
+        timestamps()
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/your-org/your-repo.git'
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                sh 'npm install'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'npm run build'
+            }
+        }
+
+        stage('Unit Test') {
+            steps {
+                sh 'npm test'
+            }
+            post {
+                always {
+                    junit 'test-results/*.xml'
+                }
+            }
+        }
+
+        stage('Code Analysis') {
+            steps {
+                sh 'npm run lint'
+            }
+        }
+
+        stage('Package') {
+            steps {
+                sh 'tar -czf $APP_NAME.tar.gz $BUILD_DIR'
+            }
+        }
+
+        stage('Deploy to Dev') {
+            when {
+                branch 'main'
+            }
+            steps {
+                sh './scripts/deploy.sh dev'
+            }
+        }
+
+        stage('Approval for Production') {
+            when {
+                branch 'main'
+            }
+            steps {
+                input message: "Deploy to Production?", ok: "Deploy"
+            }
+        }
+
+        stage('Deploy to Production') {
+            steps {
+                sh './scripts/deploy.sh prod'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Pipeline completed successfully.'
+        }
+        failure {
+            echo 'Pipeline failed.'
+        }
+        always {
+            cleanWs()
+        }
+    }
 }
