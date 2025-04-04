@@ -3,34 +3,28 @@ pipeline {
 
 
     stages {
-        stage("build") {
+        stage('Compile Stage') {
             steps {
-                echo 'buliding the application...'
+                withMaven(maven : 'maven_3_5_0'){
+                sh 'mvn clean compile'
+                }
             }
         }
 
-        stage("test") {
+        stage('Testing Stage') {
             steps {
-                echo 'testing the application...'
+                withMaven(maven : 'maven_3_5_0'){
+                sh 'mvn test'
+                }
             }
         }
 
-        stage("deploy") {
+        stage('Deployment Stage') {
             steps {
-               echo 'deploying the application...'
+                withMaven(maven : 'maven_3_5_0'){
+                sh 'mvn deploy'
+                }
             }
-        }
-    }
-
-    post {
-        success {
-            echo 'Pipeline completed successfully.'
-        }
-        failure {
-            echo 'Pipeline failed.'
-        }
-        always {
-            cleanWs()
         }
     }
 }
