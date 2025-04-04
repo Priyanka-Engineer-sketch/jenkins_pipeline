@@ -1,80 +1,23 @@
 pipeline {
     agent any  // Executes on any available node
 
-    environment {
-        // Define environment variables
-        APP_NAME = 'my-app'
-        BUILD_DIR = 'build'
-    }
-
-    options {
-        timeout(time: 30, unit: 'MINUTES')
-        timestamps()
-    }
 
     stages {
-        stage('Checkout') {
+        stage("build") {
             steps {
-                git branch: 'main', url: 'https://github.com/Priyanka-Engineer-sketch/jenkins_pipeline.git'
+                echo 'buliding the application...'
             }
         }
 
-        stage('Install Dependencies') {
+        stage("test") {
             steps {
-                sh 'npm install'
+                echo 'testing the application...'
             }
         }
 
-        stage('Build') {
+        stage("deploy") {
             steps {
-                sh 'npm run build'
-            }
-        }
-
-        stage('Unit Test') {
-            steps {
-                sh 'npm test'
-            }
-            post {
-                always {
-                    junit 'test-results/*.xml'
-                }
-            }
-        }
-
-        stage('Code Analysis') {
-            steps {
-                sh 'npm run lint'
-            }
-        }
-
-        stage('Package') {
-            steps {
-                sh 'tar -czf $APP_NAME.tar.gz $BUILD_DIR'
-            }
-        }
-
-        stage('Deploy to Dev') {
-            when {
-                branch 'main'
-            }
-            steps {
-                sh './scripts/deploy.sh dev'
-            }
-        }
-
-        stage('Approval for Production') {
-            when {
-                branch 'main'
-            }
-            steps {
-                input message: "Deploy to Production?", ok: "Deploy"
-            }
-        }
-
-        stage('Deploy to Production') {
-            steps {
-                sh './scripts/deploy.sh prod'
+               echo 'deploying the application...'
             }
         }
     }
