@@ -8,7 +8,7 @@ pipeline {
                 echo 'Building the application'
                 sh
             }
-           }
+           
         }
 
         stage('Testing Stage') {
