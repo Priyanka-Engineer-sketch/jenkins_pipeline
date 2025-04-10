@@ -49,7 +49,7 @@ pipeline {
           steps {
             sshagent(['a6dcf089-9d60-48e8-a47f-9d46439ada5b']) {
                sh '''
-               ssh -o StrictHostKeyChecking=no ec2-user@your-ec2-ip <<EOF
+               ssh -o StrictHostKeyChecking=no ec2-user@3.110.55.207 <<EOF
                   cd /home/ec2-user/jenkins_pipeline
                   git pull origin main
                   # Install dependencies (make sure to use a virtual environment)
