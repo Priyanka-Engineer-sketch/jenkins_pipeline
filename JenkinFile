@@ -1,28 +1,75 @@
 pipeline {
-    agent any  // Executes on any available node
+    agent any
 
+    environment {
+        DOCKER_IMAGE = 'hello-python-image'
+        STAGING_ENV = 'staging'
+    }
 
     stages {
-        stage('Build Stage') {
+        stage('Checkout') {
             steps {
-                echo 'Building the application'
-                
-            }
-           
-        }
-
-        stage('Testing Stage') {
-            steps {
-                echo 'Testing the application'
-                
+                // Checkout code from repository
+                checkout scm
             }
         }
 
-        stage('Deployment Stage') {
+        stage('Build Docker Image') {
             steps {
-                echo 'Deployment the application'
-                
+                script {
+                    // Build the Docker image
+                    sh 'docker build -t $DOCKER_IMAGE .'
+                }
             }
+        }
+
+        stage('Run Docker Container in Staging') {
+            steps {
+                script {
+                    // Run the container in staging environment
+                    sh 'docker run --rm $DOCKER_IMAGE'
+                }
+            }
+        }
+        
+        stage('Push Docker Image to Registry') {
+            when {
+                branch 'main' // You may want to push only from the main branch
+            }
+            steps {
+                script {
+                    // Push the Docker image to a registry, e.g., Docker Hub
+                    // Replace 'yourusername/hello-python-image' with your actual repo
+                    sh 'docker tag $DOCKER_IMAGE yourusername/hello-python-image:latest'
+                    sh 'docker push yourusername/hello-python-image:latest'
+                }
+            }
+        }
+        stage('Deploy to Staging') {
+          steps {
+            sshagent(['ec2-ssh-cred-id']) {
+               sh '''
+               ssh -o StrictHostKeyChecking=no ec2-user@your-ec2-ip <<EOF
+                  cd /path/to/your-python-app
+                  git pull origin main
+                  # Install dependencies (make sure to use a virtual environment)
+                  source venv/bin/activate
+                  pip install -r requirements.txt
+                  # Restart the application (Assuming you're using something like Gunicorn)
+                  pm2 restart all
+               EOF
+               '''
+            }
+          }
+        }
+
+    }
+
+    post {
+        always {
+            // Clean up, remove any dangling images
+            sh 'docker system prune -f'
         }
     }
 }
+
