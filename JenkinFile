@@ -50,7 +50,7 @@ pipeline {
             sshagent(['ec2-ssh-cred-id']) {
                sh '''
                ssh -o StrictHostKeyChecking=no ec2-user@your-ec2-ip <<EOF
-                  cd /path/to/your-python-app
+                  cd /home/ec2-user/jenkins_pipeline
                   git pull origin main
                   # Install dependencies (make sure to use a virtual environment)
                   source venv/bin/activate
