@@ -47,7 +47,7 @@ pipeline {
         }
         stage('Deploy to Staging') {
           steps {
-            sshagent(['ec2-ssh-cred-id']) {
+            sshagent(['a6dcf089-9d60-48e8-a47f-9d46439ada5b']) {
                sh '''
                ssh -o StrictHostKeyChecking=no ec2-user@your-ec2-ip <<EOF
                   cd /home/ec2-user/jenkins_pipeline
