@@ -51,7 +51,30 @@ pipeline {
             }
           }
         }
-     
+           stage('Deploy to Production') {
+            steps {
+                sshPublisher(publishers: [
+                    sshPublisherDesc(
+                        configName: 'prod-ec2',
+                        transfers: [
+                            sshTransfer(
+                                sourceFiles: '**',
+                                removePrefix: '',
+                                remoteDirectory: '/home/ec2-user/prod_app',
+                                execCommand: '''
+cd /home/ec2-user/prod_app
+source venv/bin/activate
+pip install -r requirements.txt
+sudo systemctl restart testapp
+'''
+                            )
+                        ],
+                        usePromotionTimestamp: false,
+                        verbose: true
+                    )
+                ])
+            }
+        }
 
     }
 
