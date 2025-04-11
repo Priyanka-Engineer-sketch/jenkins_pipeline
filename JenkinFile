@@ -63,6 +63,21 @@ pipeline {
             }
           }
         }
+        stage('Deploy to Production') {
+            steps {
+                sshPublisher(publishers: [
+                    sshPublisherDesc(
+                        configName: 'MyEC2Server',
+                        transfers: [
+                            sshTransfer(sourceFiles: 'build/**', remoteDirectory: '/home/ec2-user/prod_app')
+                        ],
+                        execCommand: 'cd /home/ec2-user/prod_app && ./deploy.sh',
+                        usePromotionTimestamp: false,
+                        verbose: true
+                    )
+                ])
+            }
+        }
 
     }
 
