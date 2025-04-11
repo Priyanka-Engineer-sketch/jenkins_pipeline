@@ -49,6 +49,7 @@ pipeline {
           steps {
             sshagent(['a6dcf089-9d60-48e8-a47f-9d46439ada5b']) {
                sh '''
+               cat <<EOF
                ssh -o StrictHostKeyChecking=no ec2-user@3.110.55.207 <<EOF
                cd /home/ec2-user/jenkins_pipeline
                git pull origin main
@@ -57,7 +58,7 @@ pipeline {
                pip install -r requirements.txt
                # Restart the application (Assuming you're using something like Gunicorn)
                pm2 restart all
-              
+               EOF
                '''
             }
           }
