@@ -77,7 +77,7 @@ pipeline {
 cd /home/ec2-user/prod_app
 source venv/bin/activate
 pip install -r requirements.txt
-sudo systemctl restart myapp
+sudo systemctl restart testapp
 '''
                             )
                         ],
