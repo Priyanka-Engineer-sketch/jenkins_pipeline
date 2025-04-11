@@ -32,19 +32,7 @@ pipeline {
             }
         }
         
-        stage('Push Docker Image to Registry') {
-            when {
-                branch 'main' // You may want to push only from the main branch
-            }
-            steps {
-                script {
-                    // Push the Docker image to a registry, e.g., Docker Hub
-                    // Replace 'yourusername/hello-python-image' with your actual repo
-                    sh 'docker tag $DOCKER_IMAGE yourusername/hello-python-image:latest'
-                    sh 'docker push yourusername/hello-python-image:latest'
-                }
-            }
-        }
+       
         stage('Deploy to Staging') {
           steps {
             sshagent(['a6dcf089-9d60-48e8-a47f-9d46439ada5b']) {
